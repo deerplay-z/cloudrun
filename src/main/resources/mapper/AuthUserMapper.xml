@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.mapper.AuthUserMapper">
+    
+    <resultMap type="AuthUser" id="AuthUserResult">
+        <result property="id"    column="id"    />
+        <result property="phoneNumber"    column="phone_number"    />
+        <result property="nickName"    column="nick_name"    />
+    </resultMap>
+
+    <sql id="selectAuthUserVo">
+        select id, phone_number, nick_name, create_time from auth_user
+    </sql>
+
+    <select id="selectAuthUserList" parameterType="AuthUser" resultMap="AuthUserResult">
+        <include refid="selectAuthUserVo"/>
+        <where>  
+            <if test="phoneNumber != null  and phoneNumber != ''"> and phone_number = #{phoneNumber}</if>
+
+        </where>
+    </select>
+    
+    <select id="selectAuthUserById" parameterType="Integer" resultMap="AuthUserResult">
+        <include refid="selectAuthUserVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertAuthUser" parameterType="AuthUser" useGeneratedKeys="true" keyProperty="id">
+        insert into auth_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="phoneNumber != null">phone_number,</if>
+            <if test="nickName != null">nick_name,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="phoneNumber != null">#{phoneNumber},</if>
+            <if test="nickName != null">#{nickName},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAuthUser" parameterType="AuthUser">
+        update auth_user
+         <trim prefix="SET" suffixOverrides=",">
+            <if test="phoneNumber != null">phone_number = #{phoneNumber},</if>
+            <if test="nickName != null">nick_name = #{nickName},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAuthUserById" parameterType="Integer">
+        delete from auth_user where id = #{id}
+    </delete>
+
+    <delete id="deleteDmBannerByIds" parameterType="String">
+        delete from auth_user where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

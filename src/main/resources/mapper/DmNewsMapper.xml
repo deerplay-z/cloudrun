@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.mapper.DmNewsMapper">
+    
+    <resultMap type="DmNews" id="DmNewsResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="coverImg"    column="cover_img"    />
+        <result property="content"    column="content"    />
+        <result property="likeCount"    column="like_count"    />
+        <result property="readCount"    column="read_count"    />
+        <result property="addTime"    column="add_time"    />
+        <result property="newsTypeId"    column="news_type_id"    />
+    </resultMap>
+
+    <sql id="selectDmNewsVo">
+        select id, title, cover_img, like_count, read_count, add_time, news_type_id from dm_news
+    </sql>
+
+    <sql id="selectDmNews">
+        select id, title, cover_img, like_count, read_count, add_time, news_type_id,content from dm_news
+    </sql>
+
+    <select id="selectDmNewsList" parameterType="DmNews" resultMap="DmNewsResult">
+        <include refid="selectDmNewsVo"/>
+        <where>  
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%') </if>
+            <if test="newsTypeId != null"> and news_type_id = #{newsTypeId} </if>
+        </where>
+    </select>
+
+    <select id="selectHotDmNewsList" resultMap="DmNewsResult">
+        <include refid="selectDmNewsVo"/>
+         order by read_count desc, like_count desc limit 10
+    </select>
+    
+    <select id="selectDmNewsById" parameterType="Integer" resultMap="DmNewsResult">
+        <include refid="selectDmNews"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertDmNews" parameterType="DmNews" useGeneratedKeys="true" keyProperty="id">
+        insert into dm_news
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null">title,</if>
+            <if test="coverImg != null">cover_img,</if>
+            <if test="content != null">content,</if>
+            <if test="likeCount != null">like_count,</if>
+            <if test="readCount != null">read_count,</if>
+            <if test="addTime != null">add_time,</if>
+            <if test="newsTypeId != null">news_type_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null">#{title},</if>
+            <if test="coverImg != null">#{coverImg},</if>
+            <if test="content != null">#{content},</if>
+            <if test="likeCount != null">#{likeCount},</if>
+            <if test="readCount != null">#{readCount},</if>
+            <if test="addTime != null">#{addTime},</if>
+            <if test="newsTypeId != null">#{newsTypeId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDmNews" parameterType="DmNews">
+        update dm_news
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null">title = #{title},</if>
+            <if test="coverImg != null">cover_img = #{coverImg},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="likeCount != null">like_count = #{likeCount},</if>
+            <if test="readCount != null">read_count = #{readCount},</if>
+            <if test="addTime != null">add_time = #{addTime},</if>
+            <if test="newsTypeId != null">news_type_id = #{newsTypeId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDmNewsById" parameterType="Integer">
+        delete from dm_news where id = #{id}
+    </delete>
+
+    <delete id="deleteDmNewsByIds" parameterType="String">
+        delete from dm_news where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

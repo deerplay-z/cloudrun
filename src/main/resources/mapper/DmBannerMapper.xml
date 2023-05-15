@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.mapper.DmBannerMapper">
+    
+    <resultMap type="DmBanner" id="DmBannerResult">
+        <result property="id"    column="id"    />
+        <result property="coverImg"    column="cover_img"    />
+        <result property="newsId"    column="news_id"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectDmBannerVo">
+        select id, cover_img, news_id, create_time from dm_banner
+    </sql>
+
+    <select id="selectDmBannerList" parameterType="DmBanner" resultMap="DmBannerResult">
+        <include refid="selectDmBannerVo"/>
+        <where>  
+            <if test="coverImg != null  and coverImg != ''"> and cover_img = #{coverImg}</if>
+            <if test="newsId != null "> and news_id = #{newsId}</if>
+        </where>
+    </select>
+    
+    <select id="selectDmBannerById" parameterType="Integer" resultMap="DmBannerResult">
+        <include refid="selectDmBannerVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertDmBanner" parameterType="DmBanner" useGeneratedKeys="true" keyProperty="id">
+        insert into dm_banner
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="coverImg != null">cover_img,</if>
+            <if test="newsId != null">news_id,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="coverImg != null">#{coverImg},</if>
+            <if test="newsId != null">#{newsId},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDmBanner" parameterType="DmBanner">
+        update dm_banner
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="coverImg != null">cover_img = #{coverImg},</if>
+            <if test="newsId != null">news_id = #{newsId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDmBannerById" parameterType="Integer">
+        delete from dm_banner where id = #{id}
+    </delete>
+
+    <delete id="deleteDmBannerByIds" parameterType="String">
+        delete from dm_banner where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

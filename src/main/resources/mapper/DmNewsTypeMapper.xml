@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.mapper.DmNewsTypeMapper">
+    
+    <resultMap type="DmNewsType" id="DmNewsTypeResult">
+        <result property="id"    column="id"    />
+        <result property="typeCode"    column="type_code"    />
+        <result property="typeName"    column="type_name"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectDmNewsTypeVo">
+        select id, type_code, type_name, create_time from dm_news_type
+    </sql>
+
+    <select id="selectDmNewsTypeList" parameterType="DmNewsType" resultMap="DmNewsTypeResult">
+        <include refid="selectDmNewsTypeVo"/>
+        <where>  
+            <if test="typeCode != null  and typeCode != ''"> and type_code = #{typeCode}</if>
+            <if test="typeName != null  and typeName != ''"> and type_name like concat('%', #{typeName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectDmNewsTypeById" parameterType="Integer" resultMap="DmNewsTypeResult">
+        <include refid="selectDmNewsTypeVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertDmNewsType" parameterType="DmNewsType" useGeneratedKeys="true" keyProperty="id">
+        insert into dm_news_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="typeCode != null">type_code,</if>
+            <if test="typeName != null">type_name,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="typeCode != null">#{typeCode},</if>
+            <if test="typeName != null">#{typeName},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDmNewsType" parameterType="DmNewsType">
+        update dm_news_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="typeCode != null">type_code = #{typeCode},</if>
+            <if test="typeName != null">type_name = #{typeName},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDmNewsTypeById" parameterType="Integer">
+        delete from dm_news_type where id = #{id}
+    </delete>
+
+    <delete id="deleteDmNewsTypeByIds" parameterType="String">
+        delete from dm_news_type where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
